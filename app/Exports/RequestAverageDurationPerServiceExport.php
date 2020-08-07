@@ -17,12 +17,12 @@ class RequestAverageDurationPerServiceExport implements FromQuery, WithHeadings
         return Request::query()
             ->select(
                 'service_id',
-                DB::raw('avg(duration)'),
+                DB::raw('avg(duration) as request'),
                 DB::raw('avg(kong)'),
                 DB::raw('avg(proxy)')
             )
             ->groupBy('service_id')
-            ->orderByDesc('request_total');
+            ->orderBy('request');
     }
 
     public function headings(): array
