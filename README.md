@@ -30,15 +30,33 @@ A suite de testes está dividida em `feature` e `unit` como o padrão do framewo
 
 Para rodar os testes é preciso copiar o arquivo `phpunit.xml.dist` e renomeá-lo para `phpunit.xml`.
 
+#### Docker
+
+Foi criada uma estrutura em docker para rodar o projeto, como é uma aplicação CLI foi utilizado a image `php:7.4-cli` e o `mysql:5.7`. Os dockerfile e tudo relacionado a docker está em `/docker` e o `docker-compose.yml` está na raiz do projeto.
+
 ### Rodando o projeto
 
 O projeto está organizado em 4 commands para executar todas features requisitadas pelo teste:
 
-Primeiro é necessário fazer o setup do banco de dados, criando uma base e adicionando as chaves necessárias para a conexão no .env. Feito isso, deve ser rodado o comando `php logger migrate`.
+Após instalar o projeto utilizando o composer é preciso subir os containers do projeto:
+
+    export UID
+    
+    docker-compose up -d
+    
+Após isso configuraremos o .env, copiando o .env.example e o renomeando.
+
+Visando facilitar o setup de incialização do projeto, fpo adicionado um command que cria a  base de dados padrão:
+    
+    docker exec -it logger_php_1 php logger db:create    
+
+E para criar as tabelas do banco de dados:
+
+    docker exec -it logger_php_1 php logger migrate
 
 É necessário adicionar o arquivo de logs em `storage/` com o nome logs.txt
   
-    php logger parse:file
+    docker exec -it logger_php_1 php logger parse:request
     
   Essa command fará o parse do arquivo de logs e salvá-los em banco de dados na tabela `requests`.
   
