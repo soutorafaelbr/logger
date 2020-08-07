@@ -6,3 +6,4 @@
 /database/database.sqlite
 .env
 storage/framework/testing
+storage/logs.txt
