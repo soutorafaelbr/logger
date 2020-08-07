@@ -13,6 +13,6 @@ class ExportRequestPerServiceCommand extends Command
 
     public function handle()
     {
-        (new RequestPerServiceExport())->store('requests-per-services.csv', 'local');
+        (new RequestPerServiceExport())->store('requests-per-service.csv', 'local');
     }
 }
