@@ -22,7 +22,7 @@ class ParseRequestDataFromRequestCommandTest extends TestCase
                 $mockedFile
             );
 
-        $this->artisan('parse-request')
+        $this->artisan('parse:request')
             ->assertExitCode(0);
 
         $this->assertDatabaseHas(
