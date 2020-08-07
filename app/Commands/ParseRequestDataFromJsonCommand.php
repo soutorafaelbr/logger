@@ -7,7 +7,7 @@ use LaravelZero\Framework\Commands\Command;
 
 class ParseRequestDataFromJsonCommand extends Command
 {
-    protected $signature = 'parse-request';
+    protected $signature = 'parse:request';
 
     protected $description = 'Parse request data from a txt of new line delimited json.';
 
