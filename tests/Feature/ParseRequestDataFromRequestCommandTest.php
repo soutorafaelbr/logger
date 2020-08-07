@@ -1,8 +1,6 @@
 <?php
 namespace Tests\Feature;
 
-use App\models\Request;
-use App\Services\ParseRequestToJsonService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -39,11 +37,11 @@ class ParseRequestDataFromRequestCommandTest extends TestCase
 
         return [
             'consumer_id' => $content['authenticated_entity']['consumer_id']['uuid'],
-            'service_id' => $content['service']['id'],
-            'name' => $content['service']['name'],
-            'kong' => $content['latencies']['kong'],
-            'duration' => $content['latencies']['request'],
-            'proxy' => $content['latencies']['proxy'],
+            'service_id'  => $content['service']['id'],
+            'name'        => $content['service']['name'],
+            'kong'        => $content['latencies']['kong'],
+            'duration'    => $content['latencies']['request'],
+            'proxy'       => $content['latencies']['proxy'],
         ];
     }
 }
