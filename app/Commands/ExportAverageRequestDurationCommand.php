@@ -4,7 +4,7 @@ namespace App\Commands;
 use App\Exports\RequestAverageDurationPerServiceExport;
 use LaravelZero\Framework\Commands\Command;
 
-class ExportAverageRequestDuration extends Command
+class ExportAverageRequestDurationCommand extends Command
 {
     protected $signature = 'export:average-duration-per-service';
 
