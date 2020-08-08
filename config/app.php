@@ -55,6 +55,11 @@ return [
 
     'providers' => [
         App\Providers\AppServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+    ],
+
+    'aliases' => [
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

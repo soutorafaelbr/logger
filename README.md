@@ -1,37 +1,72 @@
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" />
-</p>
+# Log Parser
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://img.shields.io/github/workflow/status/laravel-zero/framework/Continuous%20Integration.svg" alt="Build Status"></img></a>
-  <a href="https://scrutinizer-ci.com/g/laravel-zero/framework"><img src="https://img.shields.io/scrutinizer/g/laravel-zero/framework.svg" alt="Quality Score"></img></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://poser.pugx.org/laravel-zero/framework/d/total.svg" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://poser.pugx.org/laravel-zero/framework/v/stable.svg" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://poser.pugx.org/laravel-zero/framework/license.svg" alt="License"></a>
-</p>
+### Objetivo do projeto
 
-<h4> <center>This is a <bold>community project</bold> and not an official Laravel one </center></h4>
+O objetivo do projeto é desenvolver uma aplicação que leia um .txt no formato [ndjson](http://ndjson.org/), armazernar o conteúdo em banco de dados e então prover esses dados em formato CSV.
 
-Laravel Zero was created by, and is maintained by [Nuno Maduro](https://github.com/nunomaduro), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+##### Considerações
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
+ Conversão do NDJson - Visando performance de uma conversão tão volumosa de dados foram consideradas algumas opções como o pacote [JSONMachine](https://github.com/halaxa/json-machine), mas descartado pois tornava a manipulação dos dados mais trabalhosa não compensando o custo de implementação x o ganho de performance irrisório.
 
-------
+ ##### Estrutura do banco de dados 
+ 
+ Foram testadas duas estruturas de bancos de dados: 
+ 
+ - A primeira estrutura era dividida em services, requests e consumers em tabelas separadas, visando uma normalização da estrutura e evitando repetição de informações;
+ 
+ - A segunda implementação que é a que foi escolhida, que coloca todos os dados em uma única tabela, sendo feita assim por motivos de performance, os dados acabavam levando muito tempo para serem salvos devido a execução de 3 inserts por request (caso o consumer já não tivesse sido cadastrado).
 
-## Documentation
+##### Commands:
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+Já que não houveram exigências quanto a forma que deveriam ser estruturadas cada tarefa, as commands foram feitas separadamente para cada requisito do projeto, visando testabilidade e isolamento das funcionalidades.
 
-## Support the development
-**Do you like this project? Support it by donating**
+##### PSR-2
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
+Foi utilizado o php-cs-fixer com as regras de PSR-2 implementadas visando manter estruturação e padronização dos arquivos, as regras seguidas pelo lint podem ser encontradas em `.php_cs`.
 
-## License
+##### PHPUnit
 
-Laravel Zero is an open-source software licensed under the [MIT license](https://github.com/laravel-zero/laravel-zero/blob/stable/LICENSE.md).
+A suite de testes está dividida em `feature` e `unit` como o padrão do framework, as commands estão em feature e as classes criadas no projeto em unit.
+
+Para rodar os testes é preciso copiar o arquivo `phpunit.xml.dist` e renomeá-lo para `phpunit.xml`.
+
+#### Docker
+
+Foi criada uma estrutura em docker para rodar o projeto, como é uma aplicação CLI foi utilizado a image `php:7.4-cli` e o `mysql:5.7`. Os dockerfile e tudo relacionado a docker está em `/docker` e o `docker-compose.yml` está na raiz do projeto.
+
+### Rodando o projeto
+
+O projeto está organizado em 4 commands para executar todas features requisitadas pelo teste:
+
+Após instalar o projeto utilizando o composer é preciso subir os containers do projeto:
+
+    export UID
+    
+    docker-compose up -d
+    
+Após isso configuraremos o .env, copiando o .env.example e o renomeando.
+
+Visando facilitar o setup de incialização do projeto, fpo adicionado um command que cria a  base de dados padrão:
+    
+    docker exec -it logger_php_1 php logger db:create    
+
+E para criar as tabelas do banco de dados:
+
+    docker exec -it logger_php_1 php logger migrate
+
+É necessário adicionar o arquivo de logs em `storage/` com o nome logs.txt
+  
+    docker exec -it logger_php_1 php logger parse:request
+    
+  Essa command fará o parse do arquivo de logs e salvá-los em banco de dados na tabela `requests`.
+  
+  Para gerar cada um dos requisitos podem ser rodadas as seguintes commands:
+    
+    // Exporta a média de latencias por serviços
+    php logger export:average-duration-per-service
+
+    // Exporta as requests agrupadas por consumer
+    export:per-consumer
+
+    // Exporta as requests agrupadas por serviço
+    export:per-service

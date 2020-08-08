@@ -5,3 +5,6 @@
 .phpunit.result.cache
 /database/database.sqlite
 .env
+storage/framework/testing
+storage/logs.txt
+docker/mysql/db
